@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Logistics – FreezeFlow</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a2d9b8b8d1.js" crossorigin="anonymous"></script>
+
+  <!-- Unified Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>FreezeFlow</h1>
+        <p>Frozen Food Supply Chain</p>
+      </div>
+      <nav class="nav">
+        <a href="index.html"><i class="fa fa-tachometer"></i> Dashboard</a>
+        <a href="suppliers.html"><i class="fa fa-truck"></i> Suppliers</a>
+        <a href="inventory.html"><i class="fa fa-warehouse"></i> Inventory</a>
+        <a href="orders.html"><i class="fa fa-list"></i> Orders</a>
+        <a href="logistics.html" class="active"><i class="fa fa-map-marker-alt"></i> Logistics</a>
+        <a href="reports.html"><i class="fa fa-chart-pie"></i> Reports</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input type="text" id="search-shipments" placeholder="Search shipments..." />
+        </div>
+        <div class="profile">
+          <span>Intern – FreezeFlow</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2>Shipment Tracking</h2>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-primary" onclick="alert('Track New Shipment - Coming soon!')">
+              <i class="fa fa-plus"></i> New Shipment
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards" style="margin-bottom: 30px;">
+          <div class="card">
+            <div class="card-title">Active Shipments</div>
+            <div class="card-value" style="font-size: 32px; color: #3b82f6;">6</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Temperature Alerts</div>
+            <div class="card-value" style="font-size: 32px; color: #ef4444;">2</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">On Time Delivery</div>
+            <div class="card-value" style="font-size: 32px; color: #10b981;">94%</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Avg Temp</div>
+            <div class="card-value" style="font-size: 32px;">-16°C</div>
+          </div>
+        </div>
+
+        <!-- Temperature Alert Banner -->
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 15px;">
+          <i class="fa fa-exclamation-triangle" style="color: #f59e0b; font-size: 24px;"></i>
+          <div>
+            <div style="font-weight: 600; color: #92400e; margin-bottom: 4px;">Temperature Alert Active</div>
+            <div style="font-size: 14px; color: #92400e;">2 shipments require immediate attention due to temperature deviation</div>
+          </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+          <button class="filter-btn active" onclick="filterShipments('all')">All Shipments</button>
+          <button class="filter-btn" onclick="filterShipments('On Route')">On Route</button>
+          <button class="filter-btn" onclick="filterShipments('Delivered')">Delivered</button>
+          <button class="filter-btn" onclick="filterShipments('Critical')">Critical</button>
+        </div>
+
+        <table class="shipments-table">
+          <thead>
+            <tr>
+              <th>Shipment ID</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Temperature</th>
+              <th>Temp Status</th>
+              <th>ETA</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="shipments-body">
+            <!-- JS will populate -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const shipmentsData = [
+      { id: "SHP-00124", from: "Cold Storage A", to: "Kolkata Distributor Hub", temp: -18, eta: "2 hours", status: "On Route" },
+      { id: "SHP-00125", from: "Cold Storage B", to: "Howrah Retail Center", temp: -11, eta: "4 hours", status: "Temperature High" },
+      { id: "SHP-00126", from: "Cold Warehouse C", to: "South Kolkata Outlet", temp: -22, eta: "Delivered", status: "Delivered" },
+      { id: "SHP-00127", from: "Cold Storage A", to: "Newtown Retail Store", temp: -8, eta: "1 hour", status: "Critical" },
+      { id: "SHP-00128", from: "Cold Storage D", to: "Salt Lake Warehouse", temp: -20, eta: "3 hours", status: "On Route" },
+      { id: "SHP-00129", from: "Cold Warehouse B", to: "Park Street Retail", temp: -15, eta: "Delivered", status: "Delivered" },
+      { id: "SHP-00130", from: "Cold Storage C", to: "Behala Distribution", temp: -19, eta: "5 hours", status: "On Route" },
+      { id: "SHP-00131", from: "Cold Warehouse A", to: "Jadavpur Outlet", temp: -17, eta: "6 hours", status: "On Route" },
+      { id: "SHP-00132", from: "Cold Storage E", to: "Dum Dum Hub", temp: -21, eta: "Delivered", status: "Delivered" }
+    ];
+
+    let currentFilter = 'all';
+
+    function getTempStatus(temp) {
+      if (temp >= -12) return { label: 'Critical', class: 'danger' };
+      if (temp >= -15) return { label: 'Warning', class: 'warning' };
+      return { label: 'Optimal', class: 'good' };
+    }
+
+    function getTempColor(temp) {
+      if (temp >= -12) return '#ef4444';
+      if (temp >= -15) return '#f59e0b';
+      return '#10b981';
+    }
+
+    function loadShipments(filteredData = shipmentsData) {
+      const tbody = document.getElementById('shipments-body');
+      tbody.innerHTML = '';
+
+      filteredData.forEach(ship => {
+        const tempStatus = getTempStatus(ship.temp);
+        const tempColor = getTempColor(ship.temp);
+
+        let statusClass = 'good';
+        if (ship.status === 'Critical' || ship.status === 'Temperature High') statusClass = 'danger';
+        if (ship.status === 'Temperature High') statusClass = 'warning';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${ship.id}</strong></td>
+          <td>${ship.from}</td>
+          <td>${ship.to}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fa fa-thermometer-half" style="color: ${tempColor};"></i>
+              <span style="font-weight: 600; color: ${tempColor};">${ship.temp}°C</span>
+            </div>
+          </td>
+          <td><span class="status ${tempStatus.class}">${tempStatus.label}</span></td>
+          <td>${ship.eta}</td>
+          <td><span class="status ${statusClass}">${ship.status}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterShipments(status) {
+      currentFilter = status;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Filter data
+      let filtered = shipmentsData;
+      if (status !== 'all') {
+        filtered = shipmentsData.filter(ship => ship.status === status);
+      }
+      loadShipments(filtered);
+    }
+
+    // Search functionality
+    document.getElementById('search-shipments').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      let filtered = shipmentsData.filter(ship => 
+        ship.id.toLowerCase().includes(searchTerm) ||
+        ship.from.toLowerCase().includes(searchTerm) ||
+        ship.to.toLowerCase().includes(searchTerm)
+      );
+
+      // Apply current filter on top of search
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(ship => ship.status === currentFilter);
+      }
+
+      loadShipments(filtered);
+    });
+
+    window.onload = () => loadShipments();
+  </script>
+
+  <style>
+    .filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover {
+      border-color: #1e40af;
+      color: #1e40af;
+    }
+
+    .filter-btn.active {
+      background: #1e40af;
+      color: white;
+      border-color: #1e40af;
+    }
+  </style>
+</body>
+</html>

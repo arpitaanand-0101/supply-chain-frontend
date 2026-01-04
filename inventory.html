@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inventory – FreezeFlow</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a2d9b8b8d1.js" crossorigin="anonymous"></script>
+
+  <!-- Unified Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>FreezeFlow</h1>
+        <p>Frozen Food Supply Chain</p>
+      </div>
+      <nav class="nav">
+        <a href="index.html"><i class="fa fa-tachometer"></i> Dashboard</a>
+        <a href="suppliers.html"><i class="fa fa-truck"></i> Suppliers</a>
+        <a href="inventory.html" class="active"><i class="fa fa-warehouse"></i> Inventory</a>
+        <a href="orders.html"><i class="fa fa-list"></i> Orders</a>
+        <a href="logistics.html"><i class="fa fa-map-marker-alt"></i> Logistics</a>
+        <a href="reports.html"><i class="fa fa-chart-pie"></i> Reports</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input type="text" id="search-inventory" placeholder="Search inventory items..." />
+        </div>
+        <div class="profile">
+          <span>Intern – FreezeFlow</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2>Inventory Overview</h2>
+          <button class="btn btn-primary" onclick="alert('Add Item feature - Coming soon!')">
+            <i class="fa fa-plus"></i> Add Item
+          </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards" style="margin-bottom: 30px;">
+          <div class="card">
+            <div class="card-title">Total Items</div>
+            <div class="card-value" style="font-size: 32px;">593</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Low Stock Items</div>
+            <div class="card-value" style="font-size: 32px; color: #ef4444;">2</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Categories</div>
+            <div class="card-value" style="font-size: 32px;">5</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Reorder Soon</div>
+            <div class="card-value" style="font-size: 32px; color: #f59e0b;">1</div>
+          </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+          <button class="filter-btn active" onclick="filterInventory('all')">All Items</button>
+          <button class="filter-btn" onclick="filterInventory('Low Stock')">Low Stock</button>
+          <button class="filter-btn" onclick="filterInventory('Reorder Soon')">Reorder Soon</button>
+          <button class="filter-btn" onclick="filterInventory('Stable')">Stable</button>
+        </div>
+
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Current Stock</th>
+              <th>Safety Stock</th>
+              <th>Stock %</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="inventory-body">
+            <!-- JS will populate -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const inventoryData = [
+      { item: "Frozen Peas", category: "Vegetables", current: 120, safety: 80, status: "Stable" },
+      { item: "Chicken Breast", category: "Meat", current: 40, safety: 60, status: "Low Stock" },
+      { item: "Fish Fillets", category: "Seafood", current: 70, safety: 50, status: "Stable" },
+      { item: "Paneer Cubes", category: "Dairy", current: 35, safety: 40, status: "Reorder Soon" },
+      { item: "Ready Meal Pack", category: "Meals", current: 150, safety: 100, status: "Stable" },
+      { item: "Frozen Corn", category: "Vegetables", current: 95, safety: 70, status: "Stable" },
+      { item: "Mutton Chunks", category: "Meat", current: 28, safety: 50, status: "Low Stock" },
+      { item: "Prawns Pack", category: "Seafood", current: 55, safety: 40, status: "Stable" },
+      { item: "Spinach Cubes", category: "Vegetables", current: 88, safety: 60, status: "Stable" },
+      { item: "Cheese Blocks", category: "Dairy", current: 62, safety: 45, status: "Stable" },
+      { item: "Mixed Veg Pack", category: "Vegetables", current: 110, safety: 80, status: "Stable" },
+      { item: "Salmon Steaks", category: "Seafood", current: 45, safety: 35, status: "Stable" }
+    ];
+
+    let currentFilter = 'all';
+
+    function getStockPercentage(current, safety) {
+      return Math.round((current / safety) * 100);
+    }
+
+    function getProgressBarColor(percentage) {
+      if (percentage < 70) return '#ef4444';
+      if (percentage < 90) return '#f59e0b';
+      return '#10b981';
+    }
+
+    function loadInventory(filteredData = inventoryData) {
+      const tbody = document.getElementById('inventory-body');
+      tbody.innerHTML = '';
+
+      filteredData.forEach(item => {
+        const percentage = getStockPercentage(item.current, item.safety);
+        const barColor = getProgressBarColor(percentage);
+
+        let statusClass = 'good';
+        if (item.status === 'Low Stock') statusClass = 'danger';
+        if (item.status === 'Reorder Soon') statusClass = 'warning';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${item.item}</strong></td>
+          <td>${item.category}</td>
+          <td>${item.current} units</td>
+          <td>${item.safety} units</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="flex: 1; background: #f1f5f9; height: 8px; border-radius: 4px; overflow: hidden;">
+                <div style="width: ${percentage}%; background: ${barColor}; height: 100%;"></div>
+              </div>
+              <span style="font-weight: 600; color: ${barColor}; font-size: 13px;">${percentage}%</span>
+            </div>
+          </td>
+          <td><span class="status ${statusClass}">${item.status}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterInventory(status) {
+      currentFilter = status;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Filter data
+      let filtered = inventoryData;
+      if (status !== 'all') {
+        filtered = inventoryData.filter(item => item.status === status);
+      }
+      loadInventory(filtered);
+    }
+
+    // Search functionality
+    document.getElementById('search-inventory').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      let filtered = inventoryData.filter(item => 
+        item.item.toLowerCase().includes(searchTerm) ||
+        item.category.toLowerCase().includes(searchTerm)
+      );
+
+      // Apply current filter on top of search
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(item => item.status === currentFilter);
+      }
+
+      loadInventory(filtered);
+    });
+
+    window.onload = () => loadInventory();
+  </script>
+
+  <style>
+    .filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover {
+      border-color: #1e40af;
+      color: #1e40af;
+    }
+
+    .filter-btn.active {
+      background: #1e40af;
+      color: white;
+      border-color: #1e40af;
+    }
+  </style>
+</body>
+</html>

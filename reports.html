@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reports – FreezeFlow</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a2d9b8b8d1.js" crossorigin="anonymous"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Unified Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>FreezeFlow</h1>
+        <p>Frozen Food Supply Chain</p>
+      </div>
+      <nav class="nav">
+        <a href="index.html"><i class="fa fa-tachometer"></i> Dashboard</a>
+        <a href="suppliers.html"><i class="fa fa-truck"></i> Suppliers</a>
+        <a href="inventory.html"><i class="fa fa-warehouse"></i> Inventory</a>
+        <a href="orders.html"><i class="fa fa-list"></i> Orders</a>
+        <a href="logistics.html"><i class="fa fa-map-marker-alt"></i> Logistics</a>
+        <a href="reports.html" class="active"><i class="fa fa-chart-pie"></i> Reports</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input type="text" placeholder="Search reports..." />
+        </div>
+        <div class="profile">
+          <span>Intern – FreezeFlow</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2>Analytics & Reports</h2>
+          <button class="btn btn-primary">
+            <i class="fa fa-download"></i> Download Report
+          </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards">
+          <div class="card">
+            <div class="card-title">Monthly Revenue</div>
+            <div class="card-value">₹12.4L</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Orders Completed</div>
+            <div class="card-value">342</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Avg Delivery Time</div>
+            <div class="card-value">2.3 days</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Cold Chain Compliance</div>
+            <div class="card-value">96%</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts">
+          <div class="chart-card">
+            <h3>Supplier Distribution by Category</h3>
+            <canvas id="supplierChart" width="400" height="250"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <h3>Temperature Compliance (Last 30 Days)</h3>
+            <canvas id="complianceChart" width="400" height="250"></canvas>
+          </div>
+        </div>
+
+        <!-- Full Width Chart -->
+        <div style="margin-top: 24px;">
+          <div class="chart-card">
+            <h3>Monthly Performance Overview</h3>
+            <canvas id="performanceChart" width="800" height="300"></canvas>
+          </div>
+        </div>
+
+        <!-- Performance Table -->
+        <div style="margin-top: 40px;">
+          <h3 style="margin-bottom: 20px; font-size: 20px;">Top Performing Suppliers</h3>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Orders Fulfilled</th>
+                <th>On-Time Delivery</th>
+                <th>Temperature Compliance</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ChillDairy Co.</td>
+                <td>87</td>
+                <td>98%</td>
+                <td>100%</td>
+                <td>4.8 ⭐</td>
+              </tr>
+              <tr>
+                <td>Frosty Farms</td>
+                <td>76</td>
+                <td>95%</td>
+                <td>97%</td>
+                <td>4.5 ⭐</td>
+              </tr>
+              <tr>
+                <td>ReadyBite Foods</td>
+                <td>65</td>
+                <td>92%</td>
+                <td>98%</td>
+                <td>4.2 ⭐</td>
+              </tr>
+              <tr>
+                <td>Arctic Meats</td>
+                <td>58</td>
+                <td>90%</td>
+                <td>95%</td>
+                <td>4.1 ⭐</td>
+              </tr>
+              <tr>
+                <td>SeaFresh</td>
+                <td>42</td>
+                <td>88%</td>
+                <td>94%</td>
+                <td>3.9 ⭐</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Supplier Distribution Pie Chart
+    const supplierCtx = document.getElementById('supplierChart').getContext('2d');
+    new Chart(supplierCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Vegetables', 'Meat', 'Seafood', 'Dairy', 'Ready Meals'],
+        datasets: [{
+          data: [25, 20, 15, 22, 18],
+          backgroundColor: [
+            '#10b981',
+            '#ef4444',
+            '#3b82f6',
+            '#f59e0b',
+            '#8b5cf6'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Temperature Compliance Line Chart
+    const complianceCtx = document.getElementById('complianceChart').getContext('2d');
+    new Chart(complianceCtx, {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{
+          label: 'Compliance %',
+          data: [94, 96, 95, 97],
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 90,
+            max: 100
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Monthly Performance Bar Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(performanceCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+          {
+            label: 'Orders',
+            data: [280, 310, 290, 340, 360, 330, 380, 370, 390, 410, 400, 342],
+            backgroundColor: '#3b82f6'
+          },
+          {
+            label: 'Revenue (₹L)',
+            data: [8.2, 9.1, 8.5, 10.2, 10.8, 9.9, 11.4, 11.1, 11.7, 12.3, 12.0, 12.4],
+            backgroundColor: '#10b981'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

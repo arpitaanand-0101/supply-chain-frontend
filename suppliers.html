@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Suppliers – FreezeFlow</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a2d9b8b8d1.js" crossorigin="anonymous"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>FreezeFlow</h1>
+        <p>Frozen Food Supply Chain</p>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html"><i class="fa fa-tachometer"></i> Dashboard</a>
+        <a href="suppliers.html" class="active"><i class="fa fa-truck"></i> Suppliers</a>
+        <a href="inventory.html"><i class="fa fa-warehouse"></i> Inventory</a>
+        <a href="orders.html"><i class="fa fa-list"></i> Orders</a>
+        <a href="logistics.html"><i class="fa fa-map-marker-alt"></i> Logistics</a>
+        <a href="reports.html"><i class="fa fa-chart-pie"></i> Reports</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input type="text" id="search-box" placeholder="Search suppliers...">
+        </div>
+        <div class="profile">
+          <span>Intern – FreezeFlow</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2>Suppliers Directory</h2>
+          <button class="btn btn-primary" onclick="alert('Add Supplier feature - Coming soon!')">
+            <i class="fa fa-plus"></i> Add Supplier
+          </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards" style="margin-bottom: 30px;">
+          <div class="card">
+            <div class="card-title">Total Suppliers</div>
+            <div class="card-value" style="font-size: 32px;">14</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Active</div>
+            <div class="card-value" style="font-size: 32px; color: #10b981;">10</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">On Hold</div>
+            <div class="card-value" style="font-size: 32px; color: #f59e0b;">4</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Avg Rating</div>
+            <div class="card-value" style="font-size: 32px;">4.2 ⭐</div>
+          </div>
+        </div>
+
+        <table class="supplier-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+
+          <tbody id="supplier-body">
+            <!-- JS will inject rows -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Dummy Data for Suppliers
+    const suppliers = [
+      { name: "Frosty Farms", category: "Vegetables", location: "Delhi", contact: "+91 98765 43210", status: "Active", rating: 4.5 },
+      { name: "Arctic Meats", category: "Meat", location: "Kolkata", contact: "+91 98123 45678", status: "Active", rating: 4.1 },
+      { name: "SeaFresh", category: "Seafood", location: "Mumbai", contact: "+91 98234 56789", status: "On Hold", rating: 3.9 },
+      { name: "ChillDairy Co.", category: "Dairy", location: "Hyderabad", contact: "+91 98345 67890", status: "Active", rating: 4.8 },
+      { name: "ReadyBite Foods", category: "Ready Meals", location: "Bangalore", contact: "+91 98456 78901", status: "Active", rating: 4.2 },
+      { name: "CoolCart", category: "Vegetables", location: "Pune", contact: "+91 98567 89012", status: "On Hold", rating: 3.7 },
+      { name: "FreshFreeze Ltd", category: "Vegetables", location: "Chennai", contact: "+91 98678 90123", status: "Active", rating: 4.3 },
+      { name: "Prime Poultry", category: "Meat", location: "Ahmedabad", contact: "+91 98789 01234", status: "Active", rating: 4.4 },
+      { name: "Ocean Harvest", category: "Seafood", location: "Kochi", contact: "+91 98890 12345", status: "Active", rating: 4.0 },
+      { name: "Dairy Delights", category: "Dairy", location: "Jaipur", contact: "+91 98901 23456", status: "On Hold", rating: 3.8 },
+      { name: "Quick Meals Co.", category: "Ready Meals", location: "Lucknow", contact: "+91 99012 34567", status: "Active", rating: 4.1 },
+      { name: "Green Valley", category: "Vegetables", location: "Chandigarh", contact: "+91 99123 45678", status: "Active", rating: 4.6 },
+      { name: "Meat Masters", category: "Meat", location: "Indore", contact: "+91 99234 56789", status: "On Hold", rating: 3.5 },
+      { name: "Coastal Catch", category: "Seafood", location: "Visakhapatnam", contact: "+91 99345 67890", status: "Active", rating: 4.2 }
+    ];
+
+    function loadSuppliers(filteredSuppliers = suppliers) {
+      const tbody = document.getElementById("supplier-body");
+      tbody.innerHTML = '';
+
+      filteredSuppliers.forEach(s => {
+        let row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td><strong>${s.name}</strong></td>
+          <td>${s.category}</td>
+          <td>${s.location}</td>
+          <td>${s.contact}</td>
+          <td><span class="badge ${s.status === "Active" ? "active" : "onhold"}">${s.status}</span></td>
+          <td>${s.rating} ⭐</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    // Search functionality
+    document.getElementById('search-box').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const filtered = suppliers.filter(s => 
+        s.name.toLowerCase().includes(searchTerm) ||
+        s.category.toLowerCase().includes(searchTerm) ||
+        s.location.toLowerCase().includes(searchTerm)
+      );
+      loadSuppliers(filtered);
+    });
+
+    window.onload = () => loadSuppliers();
+  </script>
+
+  <style>
+    .supplier-table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .supplier-table th {
+      padding: 16px;
+      text-align: left;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .supplier-table td {
+      padding: 16px;
+      font-size: 14px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #475569;
+    }
+
+    .supplier-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge.onhold {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  </style>
+</body>
+</html>
